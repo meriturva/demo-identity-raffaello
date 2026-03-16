@@ -1,0 +1,16 @@
+@use './_variables.scss' as v;
+
+@use '@coreui/coreui/scss/coreui.scss' as coreui with (
+  $font-size-base: v.$font-size-base,
+  $body-bg: v.$body-bg,
+  $primary: v.$primary,
+  $warning: v.$warning,
+  $secondary: v.$secondary,
+  $input-bg: white,
+  $link-color: v.$primary,
+  $link-decoration: none,
+  $link-hover-decoration: underline
+);
+
+@use './kendo.scss';
+

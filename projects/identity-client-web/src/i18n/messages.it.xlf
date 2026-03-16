@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en-US" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="7208319070428579409" datatype="html">
+        <source>Progressbar</source>
+        <target>Progressbar</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">node_modules/@progress/kendo-angular-progressbar/fesm2022/progress-kendo-angular-progressbar.mjs</context>
+          <context context-type="linenumber">653,657</context>
+        </context-group>
+        <note priority="1" from="description">The aria-label attribute for the ProgressBar component.</note>
+        <note priority="1" from="meaning">kendo.progressbar.progressBarLabel</note>
+      </trans-unit>
+      <trans-unit id="5183069470372771806" datatype="html">
+        <source>Chunk progressbar</source>
+        <target>Chunk progressbar</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">node_modules/@progress/kendo-angular-progressbar/fesm2022/progress-kendo-angular-progressbar.mjs</context>
+          <context context-type="linenumber">878,882</context>
+        </context-group>
+        <note priority="1" from="description">The aria-label attribute for the ChunkProgressBar component.</note>
+        <note priority="1" from="meaning">kendo.chunkprogressbar.progressBarLabel</note>
+      </trans-unit>
+      <trans-unit id="4040499043091065893" datatype="html">
+        <source>Circular progressbar</source>
+        <target>Circular progressbar</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">node_modules/@progress/kendo-angular-progressbar/fesm2022/progress-kendo-angular-progressbar.mjs</context>
+          <context context-type="linenumber">1378,1383</context>
+        </context-group>
+        <note priority="1" from="description">The aria-label attribute for the Circular ProgressBar component.</note>
+        <note priority="1" from="meaning">kendo.circularprogressbar.progressBarLabel</note>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

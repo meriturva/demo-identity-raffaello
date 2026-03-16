@@ -1,0 +1,290 @@
+<div class="identity-home d-flex flex-column">
+  <header class="identity-topbar shadow-sm">
+    <div class="container-fluid px-3 py-2 d-flex flex-column flex-lg-row gap-3 align-items-start align-items-lg-center justify-content-between">
+      <div class="d-flex align-items-center gap-3">
+        <img class="brand-logo" src="img/home-logo-gruppo_inv.png" alt="Gruppo Raffaello" />
+        <div>
+          <div class="brand-title">Identity Client Web</div>
+          <div class="brand-subtitle">{{ authority }}</div>
+        </div>
+      </div>
+
+      <div class="d-flex flex-wrap align-items-center gap-2">
+        <span class="badge text-bg-light border">ENV: {{ environmentName }}</span>
+        <span class="badge" [class.text-bg-success]="isAuthenticated" [class.text-bg-secondary]="!isAuthenticated">
+          {{ isAuthenticated ? 'Autenticato' : 'Non autenticato' }}
+        </span>
+
+        @if (!isAuthenticated) {
+          <button class="btn btn-primary btn-sm" type="button" (click)="login()">
+            Login
+          </button>
+        } @else {
+          <button class="btn btn-outline-primary btn-sm" type="button" (click)="refreshToken()" [disabled]="isRefreshInProgress">
+            {{ isRefreshInProgress ? 'Refresh in corso...' : 'Refresh token' }}
+          </button>
+          <button class="btn btn-outline-secondary btn-sm" type="button" (click)="revokeAccessToken()">
+            Revoke access token
+          </button>
+          <button class="btn btn-outline-secondary btn-sm" type="button" (click)="revokeRefreshToken()">
+            Revoke refresh token
+          </button>
+          <button class="btn btn-danger btn-sm" type="button" (click)="logoffAndRevokeTokens()">
+            Logout
+          </button>
+        }
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-grow-1 overflow-auto py-4">
+    <div class="container-fluid px-3 px-lg-4">
+      @if (errorMessage) {
+        <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
+          <strong>Errore:</strong> {{ errorMessage }}
+          <button type="button" class="btn-close" aria-label="Chiudi" (click)="dismissError()"></button>
+        </div>
+      }
+
+      @if (backendUserInfoError) {
+        <div class="alert alert-warning alert-dismissible fade show mb-3" role="alert">
+          <strong>Attenzione:</strong> {{ backendUserInfoError }}
+          <button type="button" class="btn-close" aria-label="Chiudi" (click)="dismissBackendError()"></button>
+        </div>
+      }
+
+      <div class="row g-4">
+        <div class="col-12 col-xxl-4">
+          <div class="card shadow-sm h-100">
+            <div class="card-header">
+              <strong>Sessione OIDC</strong>
+            </div>
+
+            <div class="card-body">
+              @if (isBusy) {
+                <div class="d-flex align-items-center gap-2 text-muted">
+                  <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                  <span>Caricamento stato autenticazione...</span>
+                </div>
+              } @else {
+                <div class="mb-3">
+                  <div class="label">Utente</div>
+                  <div class="value">{{ email || 'N/D' }}</div>
+                </div>
+
+                <div class="mb-3">
+                  <div class="label">Client ID</div>
+                  <div class="value">{{ clientId }}</div>
+                </div>
+
+                <div class="mb-3">
+                  <div class="label">Scope richiesti</div>
+                  <div class="d-flex flex-wrap gap-2">
+                    @for (scope of requestedScopes; track scope) {
+                      <span class="badge text-bg-light border">{{ scope }}</span>
+                    }
+                  </div>
+                </div>
+
+                <div class="mb-4">
+                  <div class="label">Scope presenti nell'access token</div>
+                  <div class="d-flex flex-wrap gap-2">
+                    @if (grantedScopes.length > 0) {
+                      @for (scope of grantedScopes; track scope) {
+                        <span class="badge text-bg-success">{{ scope }}</span>
+                      }
+                    } @else {
+                      <span class="text-muted small">Nessuno scope disponibile</span>
+                    }
+                  </div>
+                </div>
+
+                @if (isAuthenticated) {
+                  <div class="token-box">
+                    <div class="token-box-title">ID Token</div>
+                    <kendo-progressbar [value]="idTokenProgress"></kendo-progressbar>
+                    <div class="token-box-meta">
+                      <span>Tempo residuo: <strong>{{ idTokenTimeLabel }}</strong></span>
+                      <span>Scadenza: {{ idTokenExpiresAt || 'N/D' }}</span>
+                      <span>Emissione: {{ idTokenIssuedAt || 'N/D' }}</span>
+                    </div>
+                  </div>
+
+                  <div class="token-box mt-3">
+                    <div class="token-box-title">Access Token</div>
+                    <kendo-progressbar [value]="accessTokenProgress"></kendo-progressbar>
+                    <div class="token-box-meta">
+                      <span>Tempo residuo: <strong>{{ accessTokenTimeLabel }}</strong></span>
+                      <span>Scadenza: {{ accessTokenExpiresAt || 'N/D' }}</span>
+                      <span>Emissione: {{ accessTokenIssuedAt || 'N/D' }}</span>
+                    </div>
+                  </div>
+                }
+              }
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-xxl-8">
+          <div class="card shadow-sm h-100">
+            <div class="card-header">
+              <strong>Dati e payload</strong>
+            </div>
+
+            <div class="card-body claims-card">
+              @if (!isAuthenticated) {
+                <div class="text-muted">
+                  Effettua il login per visualizzare i dati sessione, i claim OIDC e le informazioni restituite dal backend.
+                </div>
+              } @else {
+                <div class="claims-sections">
+                  <details class="claims-section" open>
+                    <summary>Claim aggregati (token + userData + /connect/userinfo)</summary>
+                    @if (mergedClaimEntries.length > 0) {
+                      <div class="table-responsive mt-3">
+                        <table class="table table-sm table-hover align-middle claims-table">
+                          <thead>
+                            <tr>
+                              <th class="w-25" scope="col">Claim</th>
+                              <th scope="col">Valore</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            @for (claim of mergedClaimEntries; track claim.key) {
+                              <tr>
+                                <td class="claim-key">{{ claim.key }}</td>
+                                <td>{{ claim.value }}</td>
+                              </tr>
+                            }
+                          </tbody>
+                        </table>
+                      </div>
+                    } @else {
+                      <div class="text-muted mt-3">Nessun claim disponibile.</div>
+                    }
+                  </details>
+
+                  <details class="claims-section" open>
+                    <summary>Dati utente da angular-auth-oidc-client</summary>
+                    @if (userDataClaimEntries.length > 0) {
+                      <div class="table-responsive mt-3">
+                        <table class="table table-sm table-hover align-middle claims-table">
+                          <thead>
+                            <tr>
+                              <th class="w-25" scope="col">Claim</th>
+                              <th scope="col">Valore</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            @for (claim of userDataClaimEntries; track claim.key) {
+                              <tr>
+                                <td class="claim-key">{{ claim.key }}</td>
+                                <td>{{ claim.value }}</td>
+                              </tr>
+                            }
+                          </tbody>
+                        </table>
+                      </div>
+                    } @else {
+                      <div class="text-muted mt-3">Nessun dato utente disponibile.</div>
+                    }
+                  </details>
+
+                  <details class="claims-section" open>
+                    <summary>Userinfo backend (/connect/userinfo)</summary>
+                    @if (backendClaims.length > 0) {
+                      <div class="table-responsive mt-3">
+                        <table class="table table-sm table-hover align-middle claims-table">
+                          <thead>
+                            <tr>
+                              <th class="w-25" scope="col">Claim</th>
+                              <th scope="col">Valore</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            @for (claim of backendClaims; track claim.key) {
+                              <tr>
+                                <td class="claim-key">{{ claim.key }}</td>
+                                <td>{{ claim.value }}</td>
+                              </tr>
+                            }
+                          </tbody>
+                        </table>
+                      </div>
+                    } @else {
+                      <div class="text-muted mt-3">Nessun dato restituito dal backend.</div>
+                    }
+                  </details>
+
+                  <details class="claims-section">
+                    <summary>ID Token payload</summary>
+                    @if (idTokenClaims.length > 0) {
+                      <div class="table-responsive mt-3">
+                        <table class="table table-sm table-hover align-middle claims-table">
+                          <thead>
+                            <tr>
+                              <th class="w-25" scope="col">Claim</th>
+                              <th scope="col">Valore</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            @for (claim of idTokenClaims; track claim.key) {
+                              <tr>
+                                <td class="claim-key">{{ claim.key }}</td>
+                                <td>{{ claim.value }}</td>
+                              </tr>
+                            }
+                          </tbody>
+                        </table>
+                      </div>
+                    } @else {
+                      <div class="text-muted mt-3">ID token non disponibile.</div>
+                    }
+                  </details>
+
+                  <details class="claims-section">
+                    <summary>Access Token payload</summary>
+                    @if (accessTokenClaims.length > 0) {
+                      <div class="table-responsive mt-3">
+                        <table class="table table-sm table-hover align-middle claims-table">
+                          <thead>
+                            <tr>
+                              <th class="w-25" scope="col">Claim</th>
+                              <th scope="col">Valore</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            @for (claim of accessTokenClaims; track claim.key) {
+                              <tr>
+                                <td class="claim-key">{{ claim.key }}</td>
+                                <td>{{ claim.value }}</td>
+                              </tr>
+                            }
+                          </tbody>
+                        </table>
+                      </div>
+                    } @else {
+                      <div class="text-muted mt-3">Access token non disponibile.</div>
+                    }
+                  </details>
+
+                  <details class="claims-section">
+                    <summary>Token raw</summary>
+                    <div class="mt-3">
+                      <label class="form-label small mb-1" for="id-token-raw">ID Token</label>
+                      <textarea id="id-token-raw" class="form-control form-control-sm token-raw" readonly rows="4">{{ rawIdToken || '-' }}</textarea>
+                    </div>
+                    <div class="mt-3">
+                      <label class="form-label small mb-1" for="access-token-raw">Access Token</label>
+                      <textarea id="access-token-raw" class="form-control form-control-sm token-raw" readonly rows="4">{{ rawAccessToken || '-' }}</textarea>
+                    </div>
+                  </details>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

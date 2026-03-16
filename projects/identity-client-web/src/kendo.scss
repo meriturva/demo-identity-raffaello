@@ -1,0 +1,22 @@
+@use './_variables.scss' as v;
+
+@use '@progress/kendo-theme-bootstrap/scss/index.scss' as * with (
+  $kendo-colors: (
+    primary: v.$primary,
+    primary-active: v.$primary,
+    primary-hover: v.$primary
+  ),
+  $kendo-font-size: v.$font-size-base,
+  $kendo-line-height: 20px,
+  $kendo-panelbar-header-bg: #f2f5f9,
+  $kendo-panelbar-header-text: #334155,
+  $kendo-panelbar-header-selected-bg: #eaf2ee,
+  $kendo-panelbar-header-selected-text: #1f2937,
+  $kendo-progressbar-bg: #e5edf6,
+  $kendo-progressbar-value-bg: v.$primary,
+  $kendo-window-bg: white
+);
+
+@include kendo-button--styles();
+@include kendo-panelbar--styles();
+@include kendo-progressbar--styles();

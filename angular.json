@@ -1,0 +1,172 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "identity-client-web": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "i18n": {
+        "locales": {
+          "it": {
+            "translation": "projects/identity-client-web/src/i18n/messages.it.xlf",
+            "baseHref": "/"
+          }
+        }
+      },
+      "root": "projects/identity-client-web",
+      "sourceRoot": "projects/identity-client-web/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "outputPath": "dist/identity-client-web",
+            "index": "projects/identity-client-web/src/index.html",
+            "browser": "projects/identity-client-web/src/main.ts",
+            "polyfills": [
+              "zone.js"
+            ],
+            "tsConfig": "projects/identity-client-web/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "projects/identity-client-web/public"
+              }
+            ],
+            "styles": [
+              "projects/identity-client-web/src/styles.scss"
+            ],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "baseHref": "/",
+              "sourceMap": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "3MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "projects/identity-client-web/src/environments/environment.ts",
+                  "with": "projects/identity-client-web/src/environments/environment.production.ts"
+                }
+              ],
+              "outputHashing": "none",
+              "i18nMissingTranslation": "warning",
+              "localize": [
+                "it"
+              ]
+            },
+            "staging": {
+              "baseHref": "/",
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumError": "3MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "projects/identity-client-web/src/environments/environment.ts",
+                  "with": "projects/identity-client-web/src/environments/environment.staging.ts"
+                }
+              ],
+              "outputHashing": "none",
+              "i18nMissingTranslation": "warning",
+              "localize": [
+                "it"
+              ]
+            },
+            "development": {
+              "baseHref": "/",
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "identity-client-web:build:production"
+            },
+            "staging": {
+              "buildTarget": "identity-client-web:build:staging"
+            },
+            "development": {
+              "buildTarget": "identity-client-web:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular/build:extract-i18n"
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "projects/identity-client-web/**/*.ts",
+              "projects/identity-client-web/**/*.html"
+            ],
+            "eslintConfig": "projects/identity-client-web/eslint.config.js"
+          }
+        }
+      }
+    }
+  },
+  "cli": {
+    "schematicCollections": [
+      "angular-eslint"
+    ],
+    "analytics": false
+  },
+  "schematics": {
+    "@schematics/angular:component": {
+      "type": "component"
+    },
+    "@schematics/angular:directive": {
+      "type": "directive"
+    },
+    "@schematics/angular:service": {
+      "type": "service"
+    },
+    "@schematics/angular:guard": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:interceptor": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:module": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:pipe": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:resolver": {
+      "typeSeparator": "."
+    }
+  }
+}

@@ -1,2 +1,2 @@
 ## Partenza
-* ambinte di staging: npm run identity-client-web:start
+* ambiente staging: npm run identity-client-web:start
